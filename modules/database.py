@@ -1,4 +1,5 @@
 import sqlite3
+import ast
 
 def create_db():
     conn = sqlite3.connect("study.db")
@@ -61,5 +62,5 @@ def get_last_performance():
     conn.close()
 
     if data:
-        return data[0], eval(data[1])
+        return data[0], ast.literal_eval(data[1])
     return None, None
