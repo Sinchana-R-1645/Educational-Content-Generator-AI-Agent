@@ -1,116 +1,114 @@
 import streamlit as st
+import PyPDF2
+
 from modules.quiz import generate_quiz
 from modules.flashcards import generate_flashcards
 from modules.utils import clean_text
-from modules.database import save_data, create_db, save_performance, get_last_performance
+from modules.database import (
+    save_data, create_db, save_performance,
+    get_last_performance, get_stats
+)
 
 create_db()
 
+st.set_page_config(page_title="AI Study Assistant", layout="wide")
 st.title("📚 AI Study Assistant")
 
-# Session state
-if "answers" not in st.session_state:
-    st.session_state.answers = {}
+tabs = st.tabs(["📄 Input", "📝 Quiz", "🧠 Flashcards", "📊 Progress"])
 
-text = st.text_area("Enter study content:")
+# ================= INPUT =================
+with tabs[0]:
+    uploaded_file = st.file_uploader("Upload PDF or TXT", type=["pdf", "txt"])
+    text = st.text_area("Or enter study content:")
 
-# Generate
-if st.button("Generate"):
+    if st.button("Generate"):
+        try:
+            if uploaded_file:
+                if uploaded_file.type == "application/pdf":
+                    reader = PyPDF2.PdfReader(uploaded_file)
+                    text = " ".join([page.extract_text() or "" for page in reader.pages])
+                else:
+                    text = uploaded_file.read().decode("utf-8")
 
-    if text.strip() == "":
-        st.warning("Enter text")
-    else:
-        cleaned = clean_text(text)
+            if not text.strip():
+                st.warning("Please provide input")
+            else:
+                cleaned = clean_text(text)
 
-        quiz = generate_quiz(cleaned)
-        flashcards = generate_flashcards(cleaned)
+                quiz = generate_quiz(cleaned)
+                flashcards = generate_flashcards(cleaned)
 
-        save_data(text, quiz, flashcards)
+                save_data(text, quiz, flashcards)
 
-        st.session_state.quiz = quiz
-        st.session_state.flashcards = flashcards
-        st.session_state.answers = {}
-        st.session_state.submitted = False
+                st.session_state.quiz = quiz
+                st.session_state.flashcards = flashcards
+                st.session_state.answers = {}
+
+                st.success("✅ Content processed successfully!")
+
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
 
 # ================= QUIZ =================
-if "quiz" in st.session_state:
-
-    st.subheader("📝 Quiz")
-
-    for i, q in enumerate(st.session_state.quiz):
-
-        st.write(f"Q{i+1}: {q['question']}")
-
-        choice = st.radio(
-            "Choose answer:",
-            q["options"],
-            key=f"q_{i}"
-        )
-
-        st.session_state.answers[i] = choice
-
-    if st.button("Submit Quiz"):
+with tabs[1]:
+    if "quiz" in st.session_state:
 
         score = 0
-        weak_areas = []
+        total = len(st.session_state.quiz)
 
         for i, q in enumerate(st.session_state.quiz):
+            st.write(f"**Q{i+1}: {q['question']}**")
 
-            if st.session_state.answers.get(i) == q["answer"]:
-                score += 1
+            choice = st.radio(
+                "Choose answer:",
+                q["options"],
+                key=f"q_{i}"
+            )
+
+            st.session_state.answers[i] = choice
+
+        if st.button("Submit Quiz"):
+            weak = []
+
+            for i, q in enumerate(st.session_state.quiz):
+                if st.session_state.answers.get(i) == q["answer"]:
+                    score += 1
+                else:
+                    weak.append(q["context"])
+
+            final_score = score / total
+            save_performance(final_score, weak)
+
+            st.subheader("📊 Results")
+            st.success(f"Score: {round(final_score * 100)}%")
+
+            if final_score < 0.5:
+                st.error("⚠️ You need revision")
             else:
-                weak_areas.append(q["context"])
-
-        score = score / len(st.session_state.quiz)
-
-        st.session_state.score = score
-        st.session_state.weak_areas = weak_areas
-        st.session_state.submitted = True
-
-        save_performance(score, weak_areas)
-
-# ================= RESULT =================
-if st.session_state.get("submitted"):
-
-    st.subheader("📊 Performance")
-
-    score = st.session_state.score
-    weak_areas = st.session_state.weak_areas
-
-    st.write(f"Score: {round(score * 100)}%")
-
-    if score < 0.5:
-        st.error("You need revision ⚠️")
-    else:
-        st.success("Good job 🎉")
-
-    st.subheader("✅ Correct Answers")
-    for i, q in enumerate(st.session_state.quiz):
-        st.write(f"Q{i+1}: {q['answer']}")
+                st.success("🎉 Good job!")
 
 # ================= FLASHCARDS =================
-if "flashcards" in st.session_state:
+with tabs[2]:
+    if "flashcards" in st.session_state:
+        for card in st.session_state.flashcards:
+            with st.expander(card["front"]):
+                st.write(card["back"])
 
-    st.subheader("🧠 Flashcards")
+# ================= PROGRESS =================
+with tabs[3]:
+    total, avg = get_stats()
+    last_score, last_weak = get_last_performance()
 
-    for card in st.session_state.flashcards:
-        with st.expander(card["front"]):
-            st.write(card["back"])
+    st.subheader("📈 Your Progress")
+    st.write(f"Total Attempts: {total}")
+    st.write(f"Average Score: {avg * 100}%")
 
-# ================= REVISION =================
-st.subheader("🔁 Smart Revision")
+    if last_score:
+        st.write(f"Last Score: {round(last_score * 100)}%")
 
-last_score, last_weak = get_last_performance()
-
-if last_score is not None:
-
-    st.write(f"Last Score: {round(last_score * 100)}%")
-
-    if last_weak:
-        st.write("Focus on these concepts:")
-
-        for w in set(last_weak):
-            st.info(w)
-
-else:
-    st.write("No previous performance found.")
+        if last_weak:
+            st.write("🔁 Focus on:")
+            for w in set(last_weak):
+                st.info(w)
+    else:
+        st.write("No attempts yet.")
