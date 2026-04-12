@@ -1,17 +1,28 @@
-import re
+from utils import llm
 
 def generate_flashcards(text):
-    sentences = [s.strip() for s in re.split(r'[.!?]', text) if len(s.strip()) > 20]
 
-    cards = []
+    prompt = f"""
+Create 5 flashcards.
 
-    for s in sentences[:5]:
-        words = s.split()
-        concept = " ".join(words[:3])
+Format:
+Q: question
+A: answer
 
-        cards.append({
-            "front": concept,
-            "back": s
-        })
+Content:
+{text}
+"""
 
-    return cards
+    result = llm(prompt)
+
+    # convert into proper flashcard UI
+    cards = result.split("Q:")
+
+    output = ""
+
+    for c in cards[1:]:
+        if "A:" in c:
+            q, a = c.split("A:")
+            output += f"❓ {q.strip()}\n💡 {a.strip()}\n\n"
+
+    return output
