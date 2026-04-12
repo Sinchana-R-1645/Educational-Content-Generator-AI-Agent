@@ -1,8 +1,8 @@
 LearnGenie - AI Educational Content Generator
 
 🔗 Live Demo:
-
 https://interorbitally-nonpliant-shayna.ngrok-free.dev
+
 
 🧠 Overview
 
