@@ -1,3 +1,4 @@
 streamlit
-pyngrok
-PyPDF2
+groq
+pdfplumber
+python-docx
