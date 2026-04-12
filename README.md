@@ -1,45 +1,33 @@
-# LearnGenie - Educational Content Generator AI Agent
+LearnGenie - AI Educational Content Generator
 
-Live Demo:
+🔗 Live Demo:
 https://educational-content-generator-ai-agent-fmaabystdzxsnap2ws8zfn.streamlit.app/
 
----
+🧠 Overview
 
-## Overview
+LearnGenie is an AI-powered study assistant that converts learning material into quizzes and flashcards for faster revision and better understanding.
 
-LearnGenie is an AI-based study assistant that converts input content into quizzes and flashcards to support active learning and revision.
+✨ Features
+🎯 Quiz Generation (MCQ, True/False, Fill in blanks)
+🧠 Flashcards for revision
+📄 Supports PDF, DOCX, TXT & text input
+⚡ Difficulty levels: Easy / Medium / Hard
+📊 Basic progress tracking
+🛠 Tech Stack
 
----
+Python • Streamlit • Groq API • pdfplumber • python-docx
 
-## Features
-
-* Quiz generation (MCQ, True/False, Fill in the blanks)
-* Flashcard creation
-* Supports text, PDF, and TXT input
-* Performance tracking with basic analytics
-
----
-
-## Tech Stack
-
-Python, Streamlit, SQLite, PyPDF2
-
----
-
-## Setup
-
-```bash
-git clone https://github.com/Sinchana-R-1645/Educational-Content-Generator-AI-Agent.git
-cd Educational-Content-Generator-AI-Agent
+🚀 Run Locally
+git clone https://github.com/your-username/repo-name.git
+cd repo-name
 pip install -r requirements.txt
 streamlit run app.py
-```
 
----
 
-## Team
+Team Members-
+Spoorthi S Kulkarni
+Sinchana R
+Rachana S
+S Sanchana Shetty
 
-* Spoorthi S Kulkarni
-* Rachana S
-* Sinchana R S
-* Sanchana Shetty
+
