@@ -1,19 +1,40 @@
 from utils import llm
+import json
 
 def generate_quiz(text, level, qtype):
 
-    prompt = f"""
-You are a teacher.
+    if qtype == "MCQ":
+        prompt = f"""
+Create 5 MCQ questions.
 
-Create a {level} difficulty {qtype} quiz.
+Format STRICT JSON like this:
+[
+  {{
+    "question": "...",
+    "options": ["A", "B", "C", "D"],
+    "answer": "A"
+  }}
+]
+
+Difficulty: {level}
 
 Content:
 {text}
+"""
+    else:
+        prompt = f"""
+Create 5 {qtype} questions.
 
-Rules:
-- MCQ: 4 options + answer
-- True/False: statement + answer
-- Fill blanks: sentence + answer
+Return JSON format:
+[
+  {{
+    "question": "...",
+    "answer": "..."
+  }}
+]
+
+Content:
+{text}
 """
 
     return llm(prompt)
