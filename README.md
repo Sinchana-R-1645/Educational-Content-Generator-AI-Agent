@@ -2,6 +2,7 @@ LearnGenie - AI Educational Content Generator
 
 🔗 Live Demo:
 https://educational-content-generator-ai-agent-fmaabystdzxsnap2ws8zfn.streamlit.app/
+https://interorbitally-nonpliant-shayna.ngrok-free.dev
 
 🧠 Overview
 
