@@ -1,29 +1,26 @@
 LearnGenie - AI Educational Content Generator
 
 🔗 Live Demo:
-https://interorbitally-nonpliant-shayna.ngrok-free.dev
+"https://zen-dweller-trickery.ngrok-free.dev"
 
 
 🧠 Overview
 
-LearnGenie is an AI-powered study assistant that converts learning material into quizzes and flashcards for faster revision and better understanding.
+LearnGenie is an AI-powered educational assistant that converts study material into quizzes and flashcards to improve learning and revision efficiency.
 
 ✨ Features
-🎯 Quiz Generation (MCQ, True/False, Fill in blanks)
-🧠 Flashcards for revision
-📄 Supports PDF, DOCX, TXT & text input
-⚡ Difficulty levels: Easy / Medium / Hard
-📊 Basic progress tracking
-🛠 Tech Stack
+🎯 Quiz Generation (MCQ)
+🧠 Flashcards for quick revision
+📄 Input options: Paste text, Upload PDF, Select Subject
+📚 Predefined Subjects: Physics, ADA, DBMS, Java
+⚡ Difficulty Levels: Easy / Medium / Hard
+✅ Answer checking with explanation
 
-Python • Streamlit • Groq API • pdfplumber • python-docx
+🛠 Tech Stack
+Python • Streamlit • PyPDF2
 
 🚀 Run Locally
-git clone https://github.com/your-username/repo-name.git
-cd repo-name
-pip install -r requirements.txt
-streamlit run app.py
-
+git clone https://github.com/your-username/repo-name.git cd repo-name pip install -r requirements.txt streamlit run app.py
 
 Team Members-
 Spoorthi S Kulkarni
