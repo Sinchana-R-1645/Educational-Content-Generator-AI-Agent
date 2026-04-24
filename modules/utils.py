@@ -1,36 +1,6 @@
-from groq import Groq
-import os
-import pdfplumber
-import docx
-from gtts import gTTS
-
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-MODEL = "llama-3.1-8b-instant"
-
-def llm(prompt):
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[{"role":"user","content":prompt}],
-        temperature=0.3
-    )
-    return response.choices[0].message.content
-
-def read_file(file):
-    if file.name.endswith(".pdf"):
-        text = ""
-        with pdfplumber.open(file) as pdf:
-            for page in pdf.pages:
-                text += page.extract_text() or ""
-        return text
-
-    elif file.name.endswith(".docx"):
-        doc = docx.Document(file)
-        return "\n".join([p.text for p in doc.paragraphs])
-
-    else:
-        return file.read().decode("utf-8")
-
-def generate_audio(text):
-    tts = gTTS(text=text[:3000], lang='en')
-    tts.save("summary.mp3")
-    return "summary.mp3"
+subjects_data = {
+    "Physics": "Force is any interaction that can change motion. Newton's laws explain motion. Work is force times displacement. Energy is the ability to do work. Power is the rate of doing work.",
+    "ADA": "An algorithm is a step by step solution. Time complexity measures efficiency. Divide and conquer splits problems. Greedy makes optimal choices. Dynamic programming solves overlapping problems.",
+    "DBMS": "A database stores data. DBMS manages data. SQL is used to query. Primary key uniquely identifies records. Normalization reduces redundancy.",
+    "Java": "Java is object oriented. JVM runs Java code. Encapsulation hides data. Inheritance reuses code. Polymorphism allows multiple forms."
+}
