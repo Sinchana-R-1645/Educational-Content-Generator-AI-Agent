@@ -1,5 +1,2 @@
 streamlit
-groq
-pdfplumber
-python-docx
-gtts
+PyPDF2
