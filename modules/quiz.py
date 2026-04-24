@@ -1,71 +1,23 @@
-from utils import llm
-import json
-import re
+import random
+def generate_quiz(text, level):
+    sentences = [s.strip() for s in text.split('.') if len(s) > 15]
+    quiz = []
 
-def clean_json(text):
-    text = text.replace("```json", "").replace("```", "").strip()
-    match = re.search(r"\[.*\]", text, re.DOTALL)
-    if match:
-        return match.group(0)
-    return text
+    for i in range(min(5, len(sentences))):
+        correct = sentences[i]
 
-def generate_quiz(text, level, qtype):
-    if qtype == "MCQ":
-        format_text = """
-[
-  {
-    "question":"What is Python?",
-    "options":["Snake","Programming Language","Game","Browser"],
-    "answer":"Programming Language"
-  }
-]
-"""
-    elif qtype == "True/False":
-        format_text = """
-[
-  {
-    "question":"Python is a programming language.",
-    "options":["True","False"],
-    "answer":"True"
-  }
-]
-"""
-    else:
-        format_text = """
-[
-  {
-    "question":"Python is a _____ language.",
-    "answer":"programming"
-  }
-]
-"""
-
-    prompt = f"""
-Generate exactly 5 {qtype} quiz questions.
-
-Difficulty: {level}
-
-Return ONLY a valid JSON array.
-Do not write explanations.
-Do not use markdown.
-
-Format example:
-{format_text}
-
-Content:
-{text[:3000]}
-"""
-
-    try:
-        result = llm(prompt)
-        cleaned = clean_json(result)
-        data = json.loads(cleaned)
-
-        if isinstance(data, list) and len(data) > 0:
-            return data
+        if level == "Easy":
+            question = f"What is: {correct}?"
+        elif level == "Medium":
+            question = f"Identify correct statement: {correct[:30]}..."
         else:
-            return []
+            question = f"Which best explains: {correct[:25]}...?"
 
-    except Exception as e:
-        print("Quiz Error:", e)
-        return []
+        options = random.sample(sentences, min(4, len(sentences)))
+        if correct not in options:
+            options[0] = correct
+
+        random.shuffle(options)
+        quiz.append((question, correct, options))
+
+    return quiz
