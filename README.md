@@ -20,7 +20,7 @@ LearnGenie is an AI-powered educational assistant that converts study material i
 Python • Streamlit • PyPDF2
 
 🚀 Run Locally
-git clone https://github.com/your-username/repo-name.git cd repo-name pip install -r requirements.txt streamlit run app.py
+git clone (https://github.com/Sinchana-R-1645/Educational-Content-Generator-AI-Agent.git) cd repo-name pip install -r requirements.txt streamlit run app.py
 
 Team Members-
 Spoorthi S Kulkarni
