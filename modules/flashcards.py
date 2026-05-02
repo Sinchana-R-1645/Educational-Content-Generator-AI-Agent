@@ -1,5 +1,5 @@
 
-from utils import llm
+from modules.utils import llm
 
 def generate_flashcards(text):
     prompt = f"""
