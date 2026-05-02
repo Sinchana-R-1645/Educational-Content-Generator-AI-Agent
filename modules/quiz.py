@@ -1,6 +1,6 @@
 
 import json, re
-from utils import llm
+from modules.utils import llm
 
 def clean(text):
     text = text.replace("```json","").replace("```","")
