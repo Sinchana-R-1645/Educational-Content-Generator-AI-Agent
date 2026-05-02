@@ -1,4 +1,4 @@
-%%writefile flashcards.py
+
 from utils import llm
 
 def generate_flashcards(text):
