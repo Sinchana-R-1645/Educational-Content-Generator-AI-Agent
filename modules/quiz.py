@@ -1,4 +1,4 @@
-%%writefile quiz.py
+
 import json, re
 from utils import llm
 
