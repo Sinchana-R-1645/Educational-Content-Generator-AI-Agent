@@ -1,4 +1,4 @@
-%%writefile database.py
+
 import sqlite3
 
 conn = sqlite3.connect("study.db", check_same_thread=False)
