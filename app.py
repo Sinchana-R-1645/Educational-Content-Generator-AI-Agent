@@ -1,98 +1,155 @@
+%%writefile app.py
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from modules.utils import get_content, llm, generate_audio, read_file, voice_to_text, export_pdf
 from modules.quiz import generate_quiz
 from modules.flashcards import generate_flashcards
-from modules.utils import subjects_data
-import streamlit as st
-from PyPDF2 import PdfReader
-import random
+from modules.database import save, get
 
-st.set_page_config(page_title="AI Study Assistant", layout="wide")
+st.set_page_config(layout="wide")
+st.title("📚LearnGenie - AI Study Assistant")
 
-st.title("📚 AI Study Assistant")
-
-
-# ---------- INPUT TYPE ----------
-input_type = st.radio("Choose Input Method", ["Paste Text", "Select Subject", "Upload PDF"])
-
-text = ""
-
-# TEXT INPUT
-if input_type == "Paste Text":
-    text = st.text_area("Paste your study content here")
-
-# SUBJECT INPUT
-elif input_type == "Select Subject":
-    st.write("### Click a Subject")
-
-    if st.button("Physics"):
-        st.session_state.text = subjects_data["Physics"]
-
-    if st.button("ADA"):
-        st.session_state.text = subjects_data["ADA"]
-
-    if st.button("DBMS"):
-        st.session_state.text = subjects_data["DBMS"]
-
-    if st.button("Java"):
-        st.session_state.text = subjects_data["Java"]
-
-    text = st.session_state.get("text", "")
-
-# PDF INPUT
-elif input_type == "Upload PDF":
-    file = st.file_uploader("Upload PDF", type=["pdf"])
-    if file:
-        reader = PdfReader(file)
-        for page in reader.pages:
-            text += page.extract_text() or ""
-
-# ---------- DIFFICULTY ----------
-level = st.selectbox("Difficulty", ["Easy", "Medium", "Hard"])
-
+menu = st.sidebar.radio("Menu", ["Study","Quiz","Flashcards","Analytics","Audio"])
 
 # ---------- SESSION ----------
+if "content" not in st.session_state:
+    st.session_state.content = ""
 if "quiz" not in st.session_state:
     st.session_state.quiz = []
+if "score" not in st.session_state:
+    st.session_state.score = 0
 if "cards" not in st.session_state:
     st.session_state.cards = []
 
-# ---------- MAIN ----------
-if text:
-    st.success("Content Ready ✅")
+# ---------- STUDY ----------
+if menu == "Study":
 
-    # QUIZ
-    if st.button("Generate Quiz"):
-        st.session_state.quiz = generate_quiz(text, level)
+    st.subheader("📥 Input Content")
 
-    if st.session_state.quiz:
-        st.subheader("📝 Quiz")
+    # 🎤 Voice Input
+    if st.button("🎤 Speak Topic"):
+        spoken = voice_to_text()
+        st.write("You said:", spoken)
+        st.session_state.content = get_content(spoken)
 
-        for i, (q, correct, opts) in enumerate(st.session_state.quiz):
-            selected = st.radio(q, opts, key=f"q{i}")
+    # Other Inputs
+    file = st.file_uploader("Upload PDF / DOCX / TXT", type=["pdf","docx","txt"])
+    topic = st.text_input("OR Enter Topic")
+    text_input = st.text_area("OR Paste Text")
 
-            if st.button(f"Check Answer {i+1}", key=f"check{i}"):
+    if st.button("Load Content"):
 
-                if selected == correct:
-                    st.success("✅ Correct")
+        if file:
+            st.session_state.content = read_file(file)
+
+        elif text_input.strip():
+            st.session_state.content = text_input
+
+        elif topic.strip():
+            st.session_state.content = get_content(topic)
+
+        else:
+            st.warning("Provide some input")
+
+    # Show content
+    if st.session_state.content:
+
+        st.success("Content Loaded ✅")
+        st.write(st.session_state.content[:1500])
+
+        # 📄 Export PDF
+        if st.button("📄 Export Notes as PDF"):
+            file_path = export_pdf(st.session_state.content)
+            with open(file_path, "rb") as f:
+                st.download_button("Download PDF", f, file_name="notes.pdf")
+
+        # 🧠 Summary
+        if st.button("Generate Summary"):
+            st.write(llm("Summarize:\n" + st.session_state.content))
+
+# ---------- QUIZ ----------
+elif menu == "Quiz":
+
+    level = st.selectbox("Difficulty", ["easy","medium","hard"])
+
+    if not st.session_state.content:
+        st.warning("Go to Study first")
+    else:
+        if st.button("Generate Quiz"):
+            st.session_state.quiz = generate_quiz(st.session_state.content, level)
+            st.session_state.score = 0
+
+        if st.session_state.quiz:
+            for i, q in enumerate(st.session_state.quiz):
+
+                ans = st.radio(q["question"], q["options"], key=f"q{i}")
+
+                if st.button(f"Check {i+1}", key=f"btn{i}"):
+                    if ans == q["answer"]:
+                        st.success("Correct ✅")
+                        st.session_state.score += 1
+                    else:
+                        st.error(f"Wrong ❌ → {q['answer']}")
+
+            if st.button("Finish Quiz"):
+                total = len(st.session_state.quiz)
+                score = st.session_state.score
+
+                st.success(f"Score: {score}/{total}")
+                save("topic", score, total)
+
+                percent = (score / total) * 100
+
+                if percent >= 70:
+                    st.success("🔥 Next Level: HARD")
+                elif percent >= 40:
+                    st.warning("⚡ Next Level: MEDIUM")
                 else:
-                    st.error("❌ Wrong")
-                    st.write(f"✔ Correct Answer: {correct}")
+                    st.info("📘 Next Level: EASY")
 
-                st.info(f"📘 Explanation: {correct}")
+# ---------- FLASHCARDS ----------
+elif menu == "Flashcards":
 
-    # FLASHCARDS
-    if st.button("Generate Flashcards"):
-        st.session_state.cards = generate_flashcards(text)
+    if not st.session_state.content:
+        st.warning("Add content first")
+    else:
+        if st.button("Generate Flashcards"):
+            st.session_state.cards = generate_flashcards(st.session_state.content)
 
-    if st.session_state.cards:
-        st.subheader("🧠 Flashcards")
+        if st.session_state.cards:
+            for i, (q, a) in enumerate(st.session_state.cards):
+                with st.expander(f"Card {i+1}: {q}"):
+                    st.write(a)
 
-        for i, (front, back) in enumerate(st.session_state.cards):
-            if st.button(front, key=f"card{i}"):
-                st.session_state[f"show{i}"] = True
+# ---------- ANALYTICS ----------
+elif menu == "Analytics":
 
-            if st.session_state.get(f"show{i}", False):
-                st.success(back)
+    data = get()
 
-else:
-    st.info("Provide input to start")
-           
+    if data:
+        df = pd.DataFrame(data, columns=["Subject","Score","Total"])
+        df["Percentage"] = (df["Score"] / df["Total"]) * 100
+
+        st.dataframe(df)
+
+        plt.figure()
+        plt.plot(df["Percentage"], marker="o")
+        plt.title("Performance")
+        plt.ylabel("Percentage")
+        st.pyplot(plt)
+
+    else:
+        st.info("No data yet")
+
+# ---------- AUDIO ----------
+elif menu == "Audio":
+
+    if st.session_state.content:
+        if st.button("Generate Audio"):
+            file = generate_audio(st.session_state.content)
+            if file:
+                st.audio(open(file, "rb").read())
+    else:
+        st.warning("Add content first")
