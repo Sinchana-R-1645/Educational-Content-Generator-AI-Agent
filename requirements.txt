@@ -1,2 +1,11 @@
 streamlit
-PyPDF2
+pyngrok
+groq
+gtts
+pandas
+matplotlib
+wikipedia
+speechrecognition
+reportlab
+pdfplumber
+python-docx
