@@ -1,5 +1,11 @@
-elif menu == "Analytics":
-    show_analysis()
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+from modules.database import get
+
+def show_analysis():
+
+    st.header("📊 Performance Analytics")
 
     data = get()
 
