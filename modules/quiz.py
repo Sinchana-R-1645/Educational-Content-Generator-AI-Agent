@@ -1,23 +1,26 @@
-import random
+%%writefile quiz.py
+import json, re
+from utils import llm
+
+def clean(text):
+    text = text.replace("```json","").replace("```","")
+    match = re.search(r"\[.*\]", text, re.DOTALL)
+    return match.group(0) if match else text
+
 def generate_quiz(text, level):
-    sentences = [s.strip() for s in text.split('.') if len(s) > 15]
-    quiz = []
+    prompt = f"""
+Generate exactly 5 MCQ questions.
 
-    for i in range(min(5, len(sentences))):
-        correct = sentences[i]
+Difficulty: {level}
 
-        if level == "Easy":
-            question = f"What is: {correct}?"
-        elif level == "Medium":
-            question = f"Identify correct statement: {correct[:30]}..."
-        else:
-            question = f"Which best explains: {correct[:25]}...?"
+Return JSON:
+[
+{{"question":"","options":["","","",""],"answer":""}}
+]
 
-        options = random.sample(sentences, min(4, len(sentences)))
-        if correct not in options:
-            options[0] = correct
-
-        random.shuffle(options)
-        quiz.append((question, correct, options))
-
-    return quiz
+{text[:2000]}
+"""
+    try:
+        return json.loads(clean(llm(prompt)))
+    except:
+        return []
