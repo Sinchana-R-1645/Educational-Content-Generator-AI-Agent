@@ -1,4 +1,4 @@
-%%writefile utils.py
+
 import os
 from groq import Groq
 import wikipedia
