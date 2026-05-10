@@ -1,24 +1,16 @@
+def generate_flashcards(questions, user_answers):
 
-from modules.utils import llm
+    flashcards = []
 
-def generate_flashcards(text):
-    prompt = f"""
-Create 5 flashcards.
+    for i, q in enumerate(questions):
 
-Format:
-Q: ...
-A: ...
+        if user_answers[i] != q["answer"]:
 
-{text[:2000]}
-"""
-    result = llm(prompt)
+            flashcards.append(
+                {
+                    "question": q["question"],
+                    "answer": q["answer"]
+                }
+            )
 
-    cards = []
-    parts = result.split("Q:")
-
-    for part in parts[1:]:
-        if "A:" in part:
-            q, a = part.split("A:",1)
-            cards.append((q.strip(), a.strip()))
-
-    return cards
+    return flashcards
