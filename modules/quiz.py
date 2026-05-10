@@ -1,26 +1,53 @@
+import json
 
-import json, re
-from modules.utils import llm
+from utils import (
+    llm,
+    clean_json
+)
 
-def clean(text):
-    text = text.replace("```json","").replace("```","")
-    match = re.search(r"\[.*\]", text, re.DOTALL)
-    return match.group(0) if match else text
+def generate_ai_quiz(
+    text,
+    difficulty,
+    quiz_type
+):
 
-def generate_quiz(text, level):
     prompt = f"""
-Generate exactly 5 MCQ questions.
+Generate 5 quiz questions.
 
-Difficulty: {level}
+Difficulty Level:
+{difficulty}
 
-Return JSON:
+Quiz Type:
+{quiz_type}
+
+Return ONLY valid JSON.
+
+Format:
+
 [
-{{"question":"","options":["","","",""],"answer":""}}
+ {{
+   "question": "",
+   "options": ["", "", "", ""],
+   "answer": ""
+ }}
 ]
 
-{text[:2000]}
+Content:
+{text[:3000]}
 """
+
     try:
-        return json.loads(clean(llm(prompt)))
-    except:
+
+        response = llm(prompt)
+
+        cleaned = clean_json(response)
+
+        questions = json.loads(cleaned)
+
+        return questions
+
+    except Exception as e:
+
+        print(e)
+
         return []
