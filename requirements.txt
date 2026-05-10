@@ -1,11 +1,12 @@
 streamlit
-pyngrok
 groq
+pyngrok
+PyPDF2
+python-docx
 gtts
+fpdf
 pandas
 matplotlib
 wikipedia
-speechrecognition
-reportlab
-pdfplumber
-python-docx
+nltk
+rake_nltk
