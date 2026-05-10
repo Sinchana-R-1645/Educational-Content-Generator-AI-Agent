@@ -1,25 +1,42 @@
-import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from modules.database import get
 
-def show_analysis():
+from database import get_scores
 
-    st.header("📊 Performance Analytics")
+def generate_chart():
 
-    data = get()
+    data = get_scores()
 
-    if data:
-        df = pd.DataFrame(data, columns=["Subject","Score","Total"])
-        df["Percentage"] = (df["Score"] / df["Total"]) * 100
+    if len(data) == 0:
+        return None
 
-        st.dataframe(df)
+    df = pd.DataFrame(
+        data,
+        columns=[
+            "ID",
+            "Subject",
+            "Score",
+            "Total"
+        ]
+    )
 
-        plt.figure()
-        plt.plot(df["Percentage"], marker="o")
-        plt.title("Performance")
-        plt.ylabel("Percentage")
-        st.pyplot(plt)
+    fig, ax = plt.subplots()
 
-    else:
-        st.info("No data yet")
+    ax.plot(
+        df["Score"],
+        marker='o'
+    )
+
+    ax.set_title(
+        "Student Progress"
+    )
+
+    ax.set_xlabel(
+        "Quiz Attempts"
+    )
+
+    ax.set_ylabel(
+        "Scores"
+    )
+
+    return fig
