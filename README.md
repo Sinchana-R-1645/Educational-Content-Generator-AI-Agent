@@ -1,6 +1,6 @@
 # 📚 LearnGenie – AI Educational Content Generator
 
-🔗 Live Demo: https://persecute-curing-absently.ngrok-free.dev/
+🔗 Live Demo: https://persecute-curing-absently.ngrok-free.dev
 
 ---
 
