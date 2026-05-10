@@ -1,58 +1,100 @@
-LearnGenie - AI Educational Content Generator
+# 📚 LearnGenie – AI Educational Content Generator
 
-🔗 Live Demo:
-"https://persecute-curing-absently.ngrok-free.dev"
+🔗 Live Demo: https://persecute-curing-absently.ngrok-free.dev/
 
+---
 
-🧠 Overview
+# 🧠 Overview
 
-LearnGenie is an advanced AI-powered study assistant that transforms learning content into interactive quizzes, flashcards, summaries, and audio explanations.
+LearnGenie is an AI-powered educational assistant designed to make studying smarter, easier, and more interactive. The application transforms study material into quizzes, flashcards, audio summaries, and performance analytics to help students improve learning and revision.
 
-Users can input content through text, files, or voice, and the system intelligently generates study materials to enhance understanding and revision.
+Users can upload files, paste notes, or search topics, and the system automatically generates educational content using AI.
 
-✨ Features
-📥 Smart Content Input
-Paste text directly
-Upload PDF / DOCX / TXT files
-Enter topic (auto-fetch from Wikipedia)
-🎤 Voice input (speech-to-text)
+---
 
-🧠 AI-Powered Learning
-Automatic content explanation using AI.
-Summarization of study material.
-Dynamic content generation using LLM.
+# ✨ Features
 
-🎯 AI Quiz Generation
-Generates MCQ quizzes automatically.
-Difficulty levels: Easy / Medium / Hard.
-Instant answer checking.
-Performance-based difficulty suggestion.
+## 📥 Smart Content Input
+- Upload PDF, DOCX, and TXT files
+- Paste study notes directly
+- Enter study topics for automatic content fetching
 
-🧠 Flashcards
-Auto-generated flashcards from content.
-Quick revision using expandable cards.
+---
 
-📊 Analytics
-Tracks quiz performance.
-Displays percentage scores.
-Visual performance graph.
+## 🧠 AI-Powered Learning
+- AI-generated quiz questions
+- Smart educational content processing
+- Interactive learning support
 
-🔊 Audio Learning
-Converts study content into audio (Text-to-Speech)
+---
 
-📄 Export Feature
-Download study notes as PDF.
+## 🎯 Quiz Generation
+- Automatic MCQ quiz creation
+- Difficulty levels:
+  - Easy
+  - Medium
+  - Hard
+- Instant answer checking
+- Accuracy calculation
+- Quiz performance tracking
 
-🛠 Tech Stack
-Python
-Streamlit
-Groq API (LLM)
-Wikipedia API
-SpeechRecognition
-gTTS (Text-to-Speech)
-pdfplumber / python-docx
-Matplotlib / Pandas
-SQLite (Database)
+---
+
+## 🧠 Flashcard System
+- Auto-generated flashcards from incorrect answers
+- Interactive revision system
+- Quick concept review
+
+---
+
+## 🔊 Audio Summary
+- Converts study material into audio
+- Text-to-Speech support for learning
+
+---
+
+## 📊 Student Dashboard
+- Tracks quiz attempts
+- Displays student progress
+- Performance visualization graph
+
+---
+
+## 📄 Export Features
+- Download quizzes as PDF
+- Download flashcards as PDF
+
+---
+
+# 🛠️ Technologies Used
+
+- Python
+- Streamlit
+- Groq API
+- SQLite
+- gTTS
+- PyPDF2
+- python-docx
+- Matplotlib
+- Pandas
+- FPDF
+- Wikipedia API
+
+---
+
+# 📂 Project Structure
+
+```bash
+├── app.py
+├── utils.py
+├── database.py
+├── quiz.py
+├── flashcards.py
+├── analysis.py
+├── document_processor.py
+├── audio_generator.py
+├── export_utils.py
+├── requirements.txt
 
 🚀 How to Run
 Download or clone the repository
